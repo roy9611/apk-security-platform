@@ -188,6 +188,53 @@
   letter-spacing: 0.02em;
 }
 
+/* Structured line-by-line AI output */
+.ai-panel__lines {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.ai-panel__line {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  opacity: 0;
+  transform: translateY(4px);
+  transition: opacity 300ms ease, transform 300ms ease;
+}
+
+.ai-panel__line.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.ai-panel__line-badge {
+  font-size: var(--text-2xs);
+  font-family: var(--font-mono);
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  padding: 2px 7px;
+  border: 1px solid;
+  border-radius: 2px;
+  white-space: nowrap;
+  flex-shrink: 0;
+  line-height: 1.8;
+}
+
+.ai-panel__line-text {
+  font-size: var(--text-xs);
+  font-family: var(--font-mono);
+  color: var(--text-primary);
+  line-height: 1.7;
+  letter-spacing: 0.02em;
+}
+
+.ai-panel__line-text--plain {
+  color: var(--text-secondary);
+  padding-top: 2px;
+}
+
 /* Remediation */
 .remediation-list {
   display: flex;

@@ -53,6 +53,71 @@ function remediationPriority(item) {
   return null
 }
 
+const AI_PREFIXES = {
+  'VERDICT':  { label: 'VERDICT',  color: 'var(--green)',        icon: '◈' },
+  'CRITICAL': { label: 'CRITICAL', color: 'var(--sev-critical)', icon: '▲' },
+  'EXPOSURE': { label: 'EXPOSURE', color: 'var(--sev-high)',      icon: '◉' },
+  'PATTERN':  { label: 'PATTERN',  color: 'var(--cyan)',          icon: '◆' },
+  'ACTION':   { label: 'ACTION',   color: 'var(--sev-medium)',    icon: '►' },
+}
+
+function AISummaryPanel({ summary, riskLevel }) {
+  const [visibleCount, setVisibleCount] = useState(0)
+
+  const lines = summary
+    .split('\n')
+    .map(l => l.trim())
+    .filter(Boolean)
+    .map(line => {
+      const match = Object.keys(AI_PREFIXES).find(p => line.toUpperCase().startsWith(p + ':'))
+      if (match) {
+        return { prefix: match, text: line.slice(match.length + 1).trim(), meta: AI_PREFIXES[match] }
+      }
+      return { prefix: null, text: line, meta: null }
+    })
+
+  useEffect(() => {
+    setVisibleCount(0)
+    if (!lines.length) return
+    let i = 0
+    const tick = () => {
+      i++
+      setVisibleCount(i)
+      if (i < lines.length) setTimeout(tick, 280)
+    }
+    setTimeout(tick, 200)
+  }, [summary])
+
+  return (
+    <div className="ai-panel">
+      <div className="ai-panel__header">
+        <span className="ai-panel__title">// ANALYST ASSESSMENT</span>
+        <span className="ai-panel__model">GROQ LLAMA-3.3-70B</span>
+      </div>
+      <div className="ai-panel__lines">
+        {lines.map((line, i) => (
+          <div
+            key={i}
+            className={`ai-panel__line${i < visibleCount ? ' visible' : ''}`}
+            style={{ transitionDelay: `${i * 40}ms` }}
+          >
+            {line.meta ? (
+              <>
+                <span className="ai-panel__line-badge" style={{ color: line.meta.color, borderColor: `${line.meta.color}44` }}>
+                  {line.meta.icon} {line.meta.label}
+                </span>
+                <span className="ai-panel__line-text">{line.text}</span>
+              </>
+            ) : (
+              <span className="ai-panel__line-text ai-panel__line-text--plain">{line.text}</span>
+            )}
+          </div>
+        ))}
+      </div>
+    </div>
+  )
+}
+
 function StatCard({ label, value, color, sub, delay }) {
   const [visible, setVisible] = useState(false)
   useEffect(() => {
@@ -212,7 +277,7 @@ export default function MainContent({ appState, scanData, activeModule, scanId, 
             <StatCard
               label="TOTAL FINDINGS"
               value={totalCount}
-              sub="across 6 modules"
+              sub={`across ${presentModules.length} modules`}
               delay={80}
             />
             <StatCard
@@ -235,13 +300,7 @@ export default function MainContent({ appState, scanData, activeModule, scanId, 
         {scanData.ai_summary && (
           <section>
             <div className="section-label">// AI RISK ASSESSMENT</div>
-            <div className="ai-panel">
-              <div className="ai-panel__header">
-                <span className="ai-panel__title">ANALYST ASSESSMENT</span>
-                <span className="ai-panel__model">GROQ LLAMA-3.3-70B</span>
-              </div>
-              <p className="ai-panel__text">{scanData.ai_summary}</p>
-            </div>
+            <AISummaryPanel summary={scanData.ai_summary} riskLevel={scanData.risk_level} />
           </section>
         )}
 

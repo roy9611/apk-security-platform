@@ -128,18 +128,13 @@
 
 .chart-line__svg path {
   fill: none;
-  stroke-width: 1.5;
+  stroke-width: 2;
   stroke-linecap: round;
   stroke-linejoin: round;
 }
 
 .chart-line__svg circle {
   cursor: pointer;
-  transition: r var(--t-fast);
-}
-
-.chart-line__svg circle:hover {
-  r: 5;
 }
 
 .chart-line__grid {

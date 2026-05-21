@@ -8,6 +8,9 @@ const MODULE_COLORS = {
   firebase:    'var(--sev-high)',
   ssl:         'var(--sev-medium)',
   storage:     'var(--sev-medium)',
+  yara:        'var(--sev-critical)',
+  crypto:      'var(--sev-high)',
+  webview:     'var(--sev-high)',
 }
 
 const MODULE_LABELS = {
@@ -17,6 +20,9 @@ const MODULE_LABELS = {
   firebase:    'FIREBASE',
   ssl:         'SSL/TLS',
   storage:     'STORAGE',
+  yara:        'YARA',
+  crypto:      'CRYPTO',
+  webview:     'WEBVIEW',
 }
 
 const SEV_COLORS = {
@@ -26,7 +32,7 @@ const SEV_COLORS = {
   LOW:      'var(--sev-low)',
 }
 
-const MODULE_ORDER = ['manifest','permissions','secrets','firebase','ssl','storage']
+const MODULE_ORDER = ['manifest','permissions','secrets','firebase','ssl','storage','yara','crypto','webview']
 
 function countFindings(module) {
   return (module?.findings ?? []).length
@@ -187,42 +193,34 @@ export function LineGraph({ scanData }) {
             {MODULE_LABELS[mod]?.slice(0,4)}
           </text>
         ))}
-        {data.map((d, di) => {
-          const pathLen = 1000
-          return (
-            <g key={d.sev}>
-              <path
-                d={buildPath(d.points)}
-                stroke={d.color}
-                strokeDasharray={pathLen}
-                strokeDashoffset={animated ? 0 : pathLen}
-                style={{
-                  transition: `stroke-dashoffset 1000ms cubic-bezier(0.4,0,0.2,1) ${di * 200}ms`,
-                }}
+        {data.map((d, di) => (
+          <g key={d.sev} style={{ opacity: animated ? 1 : 0, transition: `opacity 500ms ${di * 150}ms` }}>
+            <path
+              d={buildPath(d.points)}
+              stroke={d.color}
+              strokeOpacity={0.85}
+            />
+            {d.points.map((v, i) => v > 0 && (
+              <circle
+                key={i}
+                cx={xPos(i).toFixed(1)}
+                cy={yPos(v).toFixed(1)}
+                r="3.5"
+                fill={d.color}
+                style={{ transition: `r 150ms` }}
+                onMouseEnter={e => setTooltip({
+                  x: e.clientX + 8,
+                  y: e.clientY - 28,
+                  mod: MODULE_LABELS[mods[i]],
+                  sev: d.sev,
+                  count: v,
+                  color: d.color,
+                })}
+                onMouseLeave={() => setTooltip(null)}
               />
-              {d.points.map((v, i) => (
-                <circle
-                  key={i}
-                  cx={xPos(i).toFixed(1)}
-                  cy={yPos(v).toFixed(1)}
-                  r="3"
-                  fill={d.color}
-                  opacity={animated ? 1 : 0}
-                  style={{ transition: `opacity 300ms ${di * 200 + 600}ms` }}
-                  onMouseEnter={e => setTooltip({
-                    x: e.clientX + 8,
-                    y: e.clientY - 28,
-                    mod: MODULE_LABELS[mods[i]],
-                    sev: d.sev,
-                    count: v,
-                    color: d.color,
-                  })}
-                  onMouseLeave={() => setTooltip(null)}
-                />
-              ))}
-            </g>
-          )
-        })}
+            ))}
+          </g>
+        ))}
       </svg>
       {tooltip && (
         <div className="chart-line__tooltip" style={{ left: tooltip.x, top: tooltip.y }}>

@@ -25,9 +25,13 @@ def generate_summary(scan_result_dict: dict) -> str:
     condensed = _build_condensed_context(scan_result_dict)
 
     prompt = (
-        "Analyze these Android APK scan findings and write a 3-4 sentence executive summary.\n"
-        "Include: overall risk level, the most critical issues found, and a clear recommendation.\n"
-        "Be direct and technical. No bullet points. No headings.\n\n"
+        "Analyze these Android APK scan findings. Respond with EXACTLY 5 lines using these prefixes:\n"
+        "VERDICT: one sentence — overall risk level and whether the app is safe or dangerous\n"
+        "CRITICAL: the single most dangerous finding and what an attacker can do with it\n"
+        "EXPOSURE: what user data or device capabilities are at risk\n"
+        "PATTERN: one interesting or unusual pattern in the findings (or 'No unusual patterns')\n"
+        "ACTION: the first 2 things a developer must fix right now, separated by a comma\n\n"
+        "Rules: each line must start with the prefix. No extra lines. No markdown. Be specific to this app.\n\n"
         f"Scan findings:\n{condensed}"
     )
 
@@ -37,15 +41,18 @@ def generate_summary(scan_result_dict: dict) -> str:
             messages=[
                 {
                     "role": "system",
-                    "content": "You are a senior Android application security engineer.",
+                    "content": (
+                        "You are a senior Android security engineer giving a real-time briefing. "
+                        "Be direct, specific, and technical. Never say 'the application' — say 'this app'."
+                    ),
                 },
                 {
                     "role": "user",
                     "content": prompt,
                 },
             ],
-            max_tokens=300,
-            temperature=0.3,
+            max_tokens=350,
+            temperature=0.25,
         )
         return response.choices[0].message.content.strip()
     except Exception as exc:

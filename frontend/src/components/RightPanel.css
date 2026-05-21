@@ -17,17 +17,13 @@
 .rightpanel__chart {
   flex-shrink: 0;
   overflow: hidden;
-  height: 120px;
-  transition: height 250ms cubic-bezier(0.4,0,0.2,1);
+  max-height: 400px;
+  transition: max-height 300ms cubic-bezier(0.4,0,0.2,1);
   border-bottom: 1px solid var(--border-dim);
 }
 
-.rightpanel__chart:last-of-type {
-  height: 110px;
-}
-
 .rightpanel__chart.collapsed {
-  height: 32px;
+  max-height: 32px;
 }
 
 .rightpanel__chart-header {

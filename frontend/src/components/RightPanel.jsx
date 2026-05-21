@@ -29,7 +29,7 @@ export default function RightPanel({
 }) {
   return (
     <div className="rightpanel">
-      <ChartSection label="FINDINGS BY MODULE" defaultCollapsed={true}>
+      <ChartSection label="FINDINGS BY MODULE" defaultCollapsed={false}>
         <BarChart scanData={appState === 'complete' ? scanData : null} />
       </ChartSection>
 
