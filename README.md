@@ -99,6 +99,12 @@ npm run dev
 
 ## Changelog
 
+**v1.3.0** — Cryptography and WebView analysis modules
+- Cryptography analyzer: detects weak ciphers (DES, 3DES, RC4), ECB mode, static IVs, insecure random (java.util.Random), and broken hash algorithms (MD5, SHA-1)
+- WebView analyzer: detects JavaScript enabled, Java bridge exposure (addJavascriptInterface), SSL error bypass, file:// access, universal cross-origin access (UXSS), and remote debugging in production
+- Both modules wired into scoring engine with per-module caps and context bonuses
+- Frontend updated: 11-step scan progress, 9-module sidebar, full report sections for new modules
+
 **v1.2.0** — Terminal UI overhaul, project renamed AppEX
 - Complete frontend redesign: dense terminal layout, JetBrains Mono, `#00ff88` accent system
 - New component architecture: TitleBar, SectionBar, StatusBar, LeftSidebar, RightPanel

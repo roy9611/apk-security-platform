@@ -4,7 +4,7 @@ import FindingCard from './FindingCard.jsx'
 import PermissionMatrix from './PermissionMatrix.jsx'
 import './MainContent.css'
 
-const MODULE_ORDER = ['manifest','permissions','secrets','firebase','ssl','storage']
+const MODULE_ORDER = ['manifest','permissions','secrets','firebase','ssl','storage','yara','crypto','webview']
 
 const MODULE_LABELS = {
   manifest:    'MANIFEST ANALYSIS',
@@ -13,6 +13,9 @@ const MODULE_LABELS = {
   firebase:    'FIREBASE CHECK',
   ssl:         'SSL / TLS ANALYSIS',
   storage:     'STORAGE ANALYSIS',
+  yara:        'YARA RULE SCAN',
+  crypto:      'CRYPTOGRAPHY ANALYSIS',
+  webview:     'WEBVIEW AUDIT',
 }
 
 const SEV_COLORS = {

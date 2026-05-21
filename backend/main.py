@@ -27,6 +27,8 @@ from modules.firebase_checker import check_firebase
 from modules.ssl_checker import analyze_ssl
 from modules.storage_analyzer import analyze_storage
 from modules.yara_scanner import analyze_yara
+from modules.crypto_analyzer import analyze_crypto
+from modules.webview_analyzer import analyze_webview
 from modules.report_engine import calculate_risk_score, generate_remediation
 from ai.summarizer import generate_summary
 from ai.chat import chat_with_context
@@ -214,6 +216,8 @@ def run_scan(scan_id: str, apk_path: str):
             ("ssl",         analyze_ssl),
             ("storage",     analyze_storage),
             ("yara",        analyze_yara),
+            ("crypto",      analyze_crypto),
+            ("webview",     analyze_webview),
         ]
 
         for module_key, module_func in modules:

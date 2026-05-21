@@ -25,6 +25,8 @@ const MODULES = [
   { key: 'ssl',         label: 'SSL / TLS' },
   { key: 'storage',     label: 'STORAGE' },
   { key: 'yara',        label: 'YARA SCAN' },
+  { key: 'crypto',      label: 'CRYPTOGRAPHY' },
+  { key: 'webview',     label: 'WEBVIEW' },
 ]
 
 function useCountUp(target, duration = 1000) {
@@ -269,7 +271,7 @@ export default function LeftSidebar({
         <div className="leftsidebar__divider" style={{ margin: '8px 0' }} />
         <span className="leftsidebar__section-label" style={{ padding: '0 0 6px' }}>// SYSTEM</span>
         <div className="leftsidebar__system-row">ENGINE: STATIC ANALYSIS</div>
-        <div className="leftsidebar__system-row">MODULES: 6 ACTIVE</div>
+        <div className="leftsidebar__system-row">MODULES: 9 ACTIVE</div>
         <div className="leftsidebar__system-row">AI: GROQ LLAMA-3.3-70B</div>
       </div>
     </div>

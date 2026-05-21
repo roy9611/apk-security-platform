@@ -20,6 +20,8 @@ _MODULE_CAPS = {
     "ssl":         50,
     "firebase":    45,
     "secrets":     40,
+    "crypto":      35,
+    "webview":     35,
     "storage":     30,
     "permissions": 25,
 }
@@ -120,6 +122,15 @@ def calculate_risk_score(all_results: dict) -> tuple:
     if _has_title_keyword("yara", "sms exfiltration", "accessibility abuse"):
         total += 20
 
+    # WebView JS bridge + JavaScript enabled = direct code execution path
+    if _has_title_keyword("webview", "addjavascriptinterface", "java object exposed") \
+       and _has_title_keyword("webview", "javascript enabled"):
+        total += 15
+
+    # Crypto + SSL both broken = full network interception possible
+    if _has_sev("crypto", "HIGH") and _has_title_keyword("ssl", "trustmanager", "hostnameVerifier"):
+        total += 10
+
     # ── Normalise to 0-100 ────────────────────────────────────────────────────
     normalised = min(100, int((total / _MAX_RAW) * 100))
 
@@ -218,6 +229,28 @@ def _title_to_action(title: str) -> str:
         return "Implement certificate pinning with a <pin-set> in res/xml/network_security_config.xml."
     if "combination" in t or "exfiltration" in t or "surveillance" in t:
         return "Audit the declared permissions list and remove all permissions not essential to the app's core functionality."
+    if "ecb mode" in t:
+        return 'Replace ECB mode with AES/GCM/NoPadding and a random 96-bit IV generated with SecureRandom.'
+    if "weak cipher" in t or "des" in t or "rc4" in t or "blowfish" in t:
+        return 'Replace broken cipher with AES-256-GCM: Cipher.getInstance("AES/GCM/NoPadding").'
+    if "static" in t and "iv" in t:
+        return "Generate a unique random IV with SecureRandom for every encryption operation — never reuse a fixed IV."
+    if "java.util.random" in t or "insecure random" in t:
+        return "Replace java.util.Random with java.security.SecureRandom for all security-sensitive random values."
+    if "md5" in t or "sha-1" in t or "sha1" in t or "broken hash" in t:
+        return "Replace MD5/SHA-1 with SHA-256 for integrity checks, or Argon2/BCrypt for password hashing."
+    if "javascript enabled" in t:
+        return "Disable setJavaScriptEnabled unless strictly required; if required, restrict loaded URLs to a trusted allowlist."
+    if "addjavascriptinterface" in t or "java object exposed" in t:
+        return "Annotate all bridge methods with @JavascriptInterface and audit every exposed method — remove any that are not needed."
+    if "ssl error" in t and "proceed" in t:
+        return "Replace handler.proceed() in onReceivedSslError() with handler.cancel() — never silently accept invalid certificates."
+    if "file access" in t and "webview" in t:
+        return "Set setAllowFileAccess(false) and setAllowFileAccessFromFileURLs(false) on all WebView instances."
+    if "universal" in t and "file url" in t:
+        return "Set setAllowUniversalAccessFromFileURLs(false) immediately — this disables same-origin policy for file:// URLs."
+    if "remote debugging" in t or "webcontentsdebugging" in t:
+        return "Gate setWebContentsDebuggingEnabled(true) behind BuildConfig.DEBUG so it is never active in production builds."
 
     return ""
 

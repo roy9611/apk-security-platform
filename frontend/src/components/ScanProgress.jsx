@@ -10,6 +10,8 @@ const MODULES = [
   { key: 'ssl',         label: 'SSL / TLS AUDIT' },
   { key: 'storage',     label: 'STORAGE ANALYSIS' },
   { key: 'yara',        label: 'YARA RULE SCAN' },
+  { key: 'crypto',      label: 'CRYPTO ANALYSIS' },
+  { key: 'webview',     label: 'WEBVIEW AUDIT' },
   { key: 'ai',          label: 'AI RISK REPORT' },
 ]
 
@@ -24,6 +26,9 @@ function getModuleState(key, scanData) {
     firebase:    'firebase',
     ssl:         'ssl',
     storage:     'storage',
+    yara:        'yara',
+    crypto:      'crypto',
+    webview:     'webview',
     ai:          'ai_summary',
   }
   const fkey = modMap[key]
